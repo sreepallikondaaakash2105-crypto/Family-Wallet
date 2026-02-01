@@ -2,145 +2,100 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Family Wallet Pro</title>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
-        body { font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; background: #f8fafc; }
-        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); }
-        .sidebar { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap');
+        body { font-family: 'Outfit', sans-serif; background: #f1f5f9; }
         .hidden { display: none !important; }
-        
-        /* Spacing Fix for Mobile Header */
-        header { padding-top: env(safe-area-inset-top); }
-
-        /* Category Specific Colors */
-        .bg-petrol { background: #fee2e2; color: #991b1b; }
-        .bg-emi { background: #ffedd5; color: #9a3412; }
-        .bg-essentials { background: #fef9c3; color: #854d0e; }
-        .bg-newspaper { background: #f0fdf4; color: #166534; }
-        .bg-donations { background: #ecfdf5; color: #065f46; }
-        .bg-sports { background: #f0f9ff; color: #075985; }
-        .bg-food { background: #eff6ff; color: #1e40af; }
-        .bg-tea { background: #eef2ff; color: #3730a3; }
-        .bg-recharge { background: #f5f3ff; color: #5b21b6; }
-        .bg-taxi { background: #faf5ff; color: #6b21a8; }
-        .bg-parents { background: #fdf2f8; color: #9d174d; }
-        .bg-ent { background: #fff1f2; color: #9f1239; }
-        .bg-others { background: #f1f5f9; color: #1e293b; }
+        header { padding-top: 40px !important; } /* Force content below notch */
+        .tab-content { padding-bottom: 100px; }
     </style>
 </head>
 <body>
 
-    <div id="login-screen" class="fixed inset-0 bg-slate-900 z-[100] flex flex-col items-center justify-center p-10 text-center">
-        <i data-lucide="wallet" class="w-20 h-20 text-blue-400 mb-6"></i>
-        <h1 class="text-5xl font-black text-white mb-2">WalletPro</h1>
-        <p class="text-slate-400 mb-10">Secure Cloud Sync for Families</p>
-        <button onclick="login()" class="bg-white text-slate-900 px-8 py-4 rounded-2xl font-black flex items-center gap-4 shadow-2xl active:scale-95 transition">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" class="w-6 h-6">
+    <div id="login-screen" class="fixed inset-0 bg-slate-900 z-[100] flex flex-col items-center justify-center p-10 text-center text-white">
+        <h1 class="text-4xl font-black mb-8">WalletPro</h1>
+        <button onclick="login()" class="bg-white text-slate-900 px-8 py-4 rounded-2xl font-black flex items-center gap-4">
             Sign in with Gmail
         </button>
     </div>
 
-    <div id="app-ui" class="hidden min-h-screen">
-        
-        <div id="sidebar" class="sidebar fixed inset-y-0 left-0 w-72 bg-slate-900 text-white z-50 -translate-x-full shadow-2xl">
-            <div class="p-8 mt-10">
-                <div class="flex items-center gap-3 mb-10 pb-6 border-b border-slate-800">
-                    <img id="user-photo" class="w-12 h-12 rounded-full border-2 border-blue-400">
-                    <div class="text-sm font-black truncate" id="user-name">User</div>
-                </div>
-                <nav class="space-y-6">
-                    <button onclick="switchTab('expenses')" class="w-full flex items-center gap-4 text-lg font-bold hover:text-blue-400 transition">
-                        <i data-lucide="layout-dashboard"></i> Monthly Spend
-                    </button>
-                    <button onclick="switchTab('savings')" class="w-full flex items-center gap-4 text-lg font-bold hover:text-emerald-400 transition">
-                        <i data-lucide="gem"></i> Lifetime Wealth
-                    </button>
-                    <button onclick="logout()" class="w-full flex items-center gap-4 text-lg font-bold text-rose-400 mt-20">
-                        <i data-lucide="log-out"></i> Logout
-                    </button>
-                </nav>
-            </div>
-        </div>
-
-        <header class="sticky top-0 glass z-40 px-5 py-6 flex justify-between items-center border-b border-slate-200 shadow-sm">
-            <button onclick="toggleSidebar()" class="p-2 bg-white rounded-xl shadow-sm border border-slate-100"><i data-lucide="menu"></i></button>
-            <div id="month-nav" class="flex items-center gap-2 bg-slate-100 px-3 py-2 rounded-2xl">
-                <button onclick="changeMonth(-1)" class="p-1 text-slate-500"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
-                <input type="month" id="globalMonth" class="bg-transparent font-black text-sm border-none focus:ring-0 p-0 w-28 text-center" onchange="loadData()">
-                <button onclick="changeMonth(1)" class="p-1 text-slate-500"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
+    <div id="app-ui" class="hidden">
+        <header class="bg-white px-5 pb-4 flex justify-between items-center border-b shadow-sm">
+            <button onclick="toggleSidebar()" class="p-2 bg-slate-100 rounded-xl"><i data-lucide="menu"></i></button>
+            <div class="flex items-center gap-2 bg-slate-100 px-3 py-2 rounded-xl">
+                <button onclick="changeMonth(-1)"><i data-lucide="chevron-left"></i></button>
+                <input type="month" id="globalMonth" class="bg-transparent font-black text-sm border-none p-0 w-28 text-center" onchange="loadData()">
+                <button onclick="changeMonth(1)"><i data-lucide="chevron-right"></i></button>
             </div>
             <div class="w-8"></div>
         </header>
 
-        <div id="tab-expenses" class="p-5 space-y-6 max-w-lg mx-auto pb-24">
-            <div class="bg-white rounded-[2.5rem] p-6 shadow-xl border border-white text-center">
-                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Potential Savings</span>
-                <h1 id="display-net-savings" class="text-5xl font-black text-emerald-600 mt-1 mb-6">₹0</h1>
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="bg-blue-50 p-4 rounded-3xl text-left">
-                        <p class="text-[9px] font-bold text-blue-400 uppercase">Incomes</p>
-                        <p id="display-total-income" class="text-lg font-black text-blue-700">₹0</p>
-                    </div>
-                    <div class="bg-rose-50 p-4 rounded-3xl text-left">
-                        <p class="text-[9px] font-bold text-rose-400 uppercase">Expenses</p>
-                        <p id="display-total-expenses" class="text-lg font-black text-rose-700">₹0</p>
-                    </div>
+        <div id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-slate-900 text-white z-50 -translate-x-full transition-transform p-8">
+            <button onclick="toggleSidebar()" class="mb-10 text-slate-400">Close ×</button>
+            <nav class="space-y-8">
+                <button onclick="switchTab('expenses')" class="block text-xl font-bold">Monthly Spend</button>
+                <button onclick="switchTab('savings')" class="block text-xl font-bold">Lifetime Wealth</button>
+                <button onclick="logout()" class="block text-rose-400 font-bold pt-10">Logout</button>
+            </nav>
+        </div>
+
+        <div id="tab-expenses" class="tab-content p-5 space-y-6 max-w-lg mx-auto">
+            <div class="bg-white rounded-[2rem] p-6 shadow-lg text-center">
+                <p class="text-xs font-bold text-slate-400 uppercase">Balance</p>
+                <h1 id="display-net-savings" class="text-4xl font-black text-emerald-600 mb-6">₹0</h1>
+                <div class="grid grid-cols-2 gap-2 mb-4">
+                    <div class="bg-blue-50 p-3 rounded-2xl"><p class="text-[10px] text-blue-400 font-bold uppercase">Income</p><p id="display-total-income" class="font-black text-blue-700">₹0</p></div>
+                    <div class="bg-rose-50 p-3 rounded-2xl"><p class="text-[10px] text-rose-400 font-bold uppercase">Spent</p><p id="display-total-expenses" class="font-black text-rose-700">₹0</p></div>
                 </div>
-                <div class="grid grid-cols-3 gap-2 mt-4 pt-4 border-t">
-                    <input type="number" id="inc-husband" onchange="saveIncome()" placeholder="Husband" class="text-center font-bold text-xs bg-slate-50 rounded-xl p-3 border-none focus:ring-1 ring-blue-300">
-                    <input type="number" id="inc-wife" onchange="saveIncome()" placeholder="Wife" class="text-center font-bold text-xs bg-slate-50 rounded-xl p-3 border-none focus:ring-1 ring-blue-300">
-                    <input type="number" id="inc-other" onchange="saveIncome()" placeholder="Other" class="text-center font-bold text-xs bg-slate-50 rounded-xl p-3 border-none focus:ring-1 ring-blue-300">
+                <div class="flex gap-1">
+                    <input type="number" id="inc-husband" onchange="saveIncome()" placeholder="H" class="w-1/3 text-center bg-slate-50 p-2 rounded-lg text-xs font-bold border-none">
+                    <input type="number" id="inc-wife" onchange="saveIncome()" placeholder="W" class="w-1/3 text-center bg-slate-50 p-2 rounded-lg text-xs font-bold border-none">
+                    <input type="number" id="inc-other" onchange="saveIncome()" placeholder="O" class="w-1/3 text-center bg-slate-50 p-2 rounded-lg text-xs font-bold border-none">
                 </div>
             </div>
-
-            <div class="bg-slate-900 rounded-[2.5rem] p-6 shadow-2xl">
-                <select id="exp-cat" class="w-full p-4 bg-slate-800 text-white rounded-2xl border-none font-bold mb-3"></select>
+            <div class="bg-slate-900 rounded-[2rem] p-5">
+                <select id="exp-cat" class="w-full p-3 bg-slate-800 text-white rounded-xl mb-2 border-none font-bold"></select>
                 <div class="flex gap-2">
-                    <input type="number" id="exp-amt" placeholder="Amount" class="flex-1 p-4 bg-slate-800 text-white rounded-2xl border-none font-bold">
-                    <button onclick="addExpense()" class="bg-blue-500 text-white px-6 rounded-2xl font-black active:scale-95 transition">ADD</button>
+                    <input type="number" id="exp-amt" placeholder="Amount" class="flex-1 p-3 bg-slate-800 text-white rounded-xl border-none font-bold">
+                    <button onclick="addExpense()" class="bg-blue-500 text-white px-6 rounded-xl font-black">ADD</button>
                 </div>
             </div>
-
-            <div id="budget-list" class="grid grid-cols-1 gap-3"></div>
+            <div id="budget-list" class="space-y-3"></div>
         </div>
 
-        <div id="tab-savings" class="p-5 space-y-6 hidden max-w-lg mx-auto pb-24">
-            <div class="bg-gradient-to-br from-indigo-600 to-emerald-500 p-8 rounded-[3rem] text-white shadow-2xl text-center">
-                <p class="text-white/70 text-sm font-bold uppercase tracking-widest">Net Wealth</p>
-                <h1 id="lifetime-savings" class="text-5xl font-black mt-2">₹0</h1>
+        <div id="tab-savings" class="tab-content p-5 space-y-6 hidden max-w-lg mx-auto">
+            <div class="bg-indigo-600 p-8 rounded-[2rem] text-white shadow-xl text-center">
+                <p class="text-indigo-200 text-xs font-bold uppercase">Net Wealth</p>
+                <h1 id="lifetime-savings" class="text-4xl font-black">₹0</h1>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="saving-tiles"></div>
+            <div id="saving-tiles" class="flex flex-col gap-4"></div>
         </div>
+    </div>
 
-        <div id="expense-detail-view" class="fixed inset-0 bg-white z-[60] hidden p-6 overflow-y-auto pt-16">
-            <div class="flex justify-between items-center mb-8">
-                <h2 id="detail-cat-name" class="text-3xl font-black text-slate-800 tracking-tighter">History</h2>
-                <button onclick="closeExpenseDetails()" class="p-3 bg-slate-100 rounded-2xl text-slate-500"><i data-lucide="x"></i></button>
-            </div>
-            <div id="daily-log-list" class="space-y-4"></div>
+    <div id="expense-detail-view" class="fixed inset-0 bg-white z-[70] hidden p-6 pt-20 overflow-y-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h2 id="detail-cat-name" class="text-2xl font-black">Details</h2>
+            <button onclick="closeExpenseDetails()" class="text-slate-400 font-bold">Close ×</button>
         </div>
+        <div id="daily-log-list" class="space-y-3"></div>
+    </div>
 
-        <div id="saving-detail-view" class="fixed inset-0 bg-white z-[60] hidden p-6 overflow-y-auto pt-16">
-            <div class="flex justify-between items-center mb-6">
-                <h3 id="selected-saving-title" class="font-black text-3xl tracking-tighter">Category</h3>
-                <button onclick="closeSavingDetails()" class="p-3 bg-slate-100 rounded-2xl text-slate-500"><i data-lucide="x"></i></button>
-            </div>
-            <div class="bg-slate-50 p-6 rounded-[2.5rem] border-2 border-dashed border-slate-200 mb-8 space-y-4">
-                <input type="date" id="sav-date" class="w-full p-4 bg-white rounded-2xl border-none shadow-sm font-bold">
-                <input type="number" id="sav-amt" placeholder="Amount ₹" class="w-full p-4 bg-white rounded-2xl border-none shadow-sm font-black text-emerald-600">
-                <textarea id="sav-note" placeholder="Notes" class="w-full p-4 bg-white rounded-2xl border-none shadow-sm text-sm"></textarea>
-                <button onclick="addSavingLog()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black shadow-lg">SAVE RECORD</button>
-            </div>
-            <div id="saving-log-list" class="space-y-3"></div>
+    <div id="saving-detail-view" class="fixed inset-0 bg-white z-[70] hidden p-6 pt-20 overflow-y-auto">
+        <div class="flex justify-between mb-4"><h3 id="selected-saving-title" class="font-black text-2xl">Saving</h3><button onclick="closeSavingDetails()">×</button></div>
+        <div class="bg-slate-50 p-4 rounded-2xl space-y-3 mb-6">
+            <input type="date" id="sav-date" class="w-full p-3 rounded-xl border-none shadow-sm font-bold">
+            <input type="number" id="sav-amt" placeholder="Amount" class="w-full p-3 rounded-xl border-none shadow-sm font-bold">
+            <textarea id="sav-note" placeholder="Notes" class="w-full p-3 rounded-xl border-none shadow-sm"></textarea>
+            <button onclick="addSavingLog()" class="w-full bg-slate-900 text-white py-3 rounded-xl font-black">SAVE</button>
         </div>
+        <div id="saving-log-list" class="space-y-2"></div>
     </div>
 
     <script>
@@ -152,227 +107,117 @@
             messagingSenderId: "376381204269",
             appId: "1:376381204269:web:4a9c4ebfe8aa09a1f395a4"
         };
-
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-        const provider = new firebase.auth.GoogleAuthProvider();
-
-        let currentUser = null;
-        let userData = { months: {}, savings: { "Gold": [], "FD": [], "Stocks": [], "Post Office": [] } };
-        let currentMonth = new Date().toISOString().slice(0, 7);
-
+        const auth = firebase.auth(), db = firebase.firestore(), provider = new firebase.auth.GoogleAuthProvider();
+        let currentUser = null, userData = { months: {}, savings: { "Gold": [], "FD": [], "Stocks": [], "Post Office": [] } }, currentMonth = new Date().toISOString().slice(0, 7);
         const categories = [
-            { name: "Petrol", class: "bg-petrol" }, { name: "EMI", class: "bg-emi" }, 
-            { name: "Essentials", class: "bg-essentials" }, { name: "News paper", class: "bg-newspaper" },
-            { name: "Donations", class: "bg-donations" }, { name: "Sports", class: "bg-sports" },
-            { name: "Outside Food", class: "bg-food" }, { name: "Office tea and snack", class: "bg-tea" },
-            { name: "Recharge", class: "bg-recharge" }, { name: "Taxi", class: "bg-taxi" },
-            { name: "Parents spends", class: "bg-parents" }, { name: "Entertainment", class: "bg-ent" },
-            { name: "Others", class: "bg-others" }
+            { name: "Petrol", color: "bg-red-100" }, { name: "EMI", color: "bg-orange-100" }, 
+            { name: "Essentials", color: "bg-yellow-100" }, { name: "News paper", color: "bg-green-100" },
+            { name: "Donations", color: "bg-emerald-100" }, { name: "Sports", color: "bg-cyan-100" },
+            { name: "Outside Food", color: "bg-blue-100" }, { name: "Office tea", color: "bg-indigo-100" },
+            { name: "Recharge", color: "bg-purple-100" }, { name: "Taxi", color: "bg-fuchsia-100" },
+            { name: "Parents", color: "bg-pink-100" }, { name: "Entertainment", color: "bg-rose-100" },
+            { name: "Others", color: "bg-slate-200" }
         ];
-
-        auth.onAuthStateChanged(async (user) => {
-            if (user) {
-                currentUser = user;
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('app-ui').classList.remove('hidden');
-                document.getElementById('user-name').innerText = user.displayName;
-                document.getElementById('user-photo').src = user.photoURL;
-                await syncFromCloud();
-                render();
-            } else {
-                document.getElementById('login-screen').classList.remove('hidden');
-                document.getElementById('app-ui').classList.add('hidden');
-            }
-        });
-
+        auth.onAuthStateChanged(async (u) => { if(u){ currentUser=u; document.getElementById('login-screen').classList.add('hidden'); document.getElementById('app-ui').classList.remove('hidden'); await syncFromCloud(); render(); } });
         function login() { auth.signInWithPopup(provider); }
-        function logout() { auth.signOut(); }
-
-        async function syncFromCloud() {
-            const doc = await db.collection('users').doc(currentUser.uid).get();
-            if (doc.exists) { userData = doc.data(); }
-            loadData();
-        }
-
-        async function syncToCloud() {
-            if (currentUser) { await db.collection('users').doc(currentUser.uid).set(userData); }
-        }
-
+        function logout() { auth.signOut().then(() => location.reload()); }
+        async function syncFromCloud() { const doc = await db.collection('users').doc(currentUser.uid).get(); if(doc.exists) userData = doc.data(); loadData(); }
+        async function syncToCloud() { if(currentUser) await db.collection('users').doc(currentUser.uid).set(userData); }
         function loadData() {
             currentMonth = document.getElementById('globalMonth').value;
-            if (!userData.months[currentMonth]) {
-                userData.months[currentMonth] = { income: { husband: 0, wife: 0, other: 0 }, spends: [], budgets: {} };
-                categories.forEach(c => userData.months[currentMonth].budgets[c.name] = 0);
-            }
+            if(!userData.months[currentMonth]) userData.months[currentMonth] = { income:{husband:0,wife:0,other:0}, spends:[], budgets:{} };
             const m = userData.months[currentMonth];
             document.getElementById('inc-husband').value = m.income.husband || '';
             document.getElementById('inc-wife').value = m.income.wife || '';
             document.getElementById('inc-other').value = m.income.other || '';
             render();
         }
-
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); }
-
-        function switchTab(tab) {
-            document.getElementById('tab-expenses').classList.toggle('hidden', tab !== 'expenses');
-            document.getElementById('tab-savings').classList.toggle('hidden', tab !== 'savings');
-            document.getElementById('month-nav').style.visibility = (tab === 'expenses') ? "visible" : "hidden";
-            if(window.innerWidth < 768 && !document.getElementById('sidebar').classList.contains('-translate-x-full')) toggleSidebar();
+        function switchTab(t) {
+            document.getElementById('tab-expenses').classList.toggle('hidden', t!=='expenses');
+            document.getElementById('tab-savings').classList.toggle('hidden', t!=='savings');
+            if(window.innerWidth < 768) document.getElementById('sidebar').classList.add('-translate-x-full');
             render();
         }
-
-        function changeMonth(delta) {
-            let [y, m] = currentMonth.split('-').map(Number);
-            m += delta;
-            if (m > 12) { y++; m = 1; } if (m < 1) { y--; m = 12; }
-            currentMonth = `${y}-${m.toString().padStart(2, '0')}`;
-            document.getElementById('globalMonth').value = currentMonth;
-            loadData();
+        function changeMonth(d) {
+            let [y,m] = currentMonth.split('-').map(Number); m+=d;
+            if(m>12){y++;m=1} if(m<1){y--;m=12}
+            currentMonth=`${y}-${m.toString().padStart(2,'0')}`;
+            document.getElementById('globalMonth').value = currentMonth; loadData();
         }
-
         async function saveIncome() {
             const m = userData.months[currentMonth];
-            m.income.husband = parseFloat(document.getElementById('inc-husband').value) || 0;
-            m.income.wife = parseFloat(document.getElementById('inc-wife').value) || 0;
-            m.income.other = parseFloat(document.getElementById('inc-other').value) || 0;
+            m.income.husband = parseFloat(document.getElementById('inc-husband').value)||0;
+            m.income.wife = parseFloat(document.getElementById('inc-wife').value)||0;
+            m.income.other = parseFloat(document.getElementById('inc-other').value)||0;
             await syncToCloud(); render();
         }
-
         async function addExpense() {
-            const cat = document.getElementById('exp-cat').value;
-            const amt = parseFloat(document.getElementById('exp-amt').value);
-            if (!amt) return;
+            const cat = document.getElementById('exp-cat').value, amt = parseFloat(document.getElementById('exp-amt').value);
+            if(!amt) return;
             userData.months[currentMonth].spends.push({ cat, amt, date: new Date().toLocaleDateString('en-GB') });
-            document.getElementById('exp-amt').value = '';
-            await syncToCloud(); render();
+            document.getElementById('exp-amt').value = ''; await syncToCloud(); render();
         }
-
         async function updateBudget(cat, val, e) {
-            e.stopPropagation();
-            userData.months[currentMonth].budgets[cat] = parseFloat(val) || 0;
+            e.stopPropagation(); userData.months[currentMonth].budgets[cat] = parseFloat(val)||0;
             await syncToCloud(); render();
         }
-
         function render() {
-            const mData = userData.months[currentMonth];
-            if (!mData) return;
-            const income = Object.values(mData.income).reduce((a, b) => a + b, 0);
-            const spent = mData.spends.reduce((a, b) => a + b.amt, 0);
-            
-            document.getElementById('display-total-income').innerText = `₹${income.toLocaleString()}`;
-            document.getElementById('display-total-expenses').innerText = `₹${spent.toLocaleString()}`;
-            document.getElementById('display-net-savings').innerText = `₹${(income - spent).toLocaleString()}`;
-
-            const sel = document.getElementById('exp-cat');
-            sel.innerHTML = categories.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
-
-            const blist = document.getElementById('budget-list');
-            blist.innerHTML = '';
+            const mData = userData.months[currentMonth]; if(!mData) return;
+            const inc = Object.values(mData.income).reduce((a,b)=>a+b,0), exp = mData.spends.reduce((a,b)=>a+b.amt,0);
+            document.getElementById('display-total-income').innerText = `₹${inc.toLocaleString()}`;
+            document.getElementById('display-total-expenses').innerText = `₹${exp.toLocaleString()}`;
+            document.getElementById('display-net-savings').innerText = `₹${(inc-exp).toLocaleString()}`;
+            document.getElementById('exp-cat').innerHTML = categories.map(c=>`<option value="${c.name}">${c.name}</option>`).join('');
+            const blist = document.getElementById('budget-list'); blist.innerHTML = '';
             categories.forEach(c => {
-                const catSpent = mData.spends.filter(s => s.cat === c.name).reduce((a, b) => a + b.amt, 0);
-                const budget = mData.budgets[c.name] || 0;
-                const remain = budget - catSpent;
-                const div = document.createElement('div');
-                div.className = `p-5 rounded-[2.5rem] flex items-center gap-4 shadow-sm border-2 ${c.class} active:scale-95 transition cursor-pointer`;
-                div.onclick = () => openExpenseDetails(c.name);
-                div.innerHTML = `<div class="bg-white/40 p-3 rounded-2xl"><i data-lucide="pocket" class="w-5 h-5"></i></div>
-                    <div class="flex-1 overflow-hidden">
-                        <div class="text-[9px] font-black uppercase opacity-60 truncate">${c.name}</div>
-                        <div class="text-xl font-black">₹${remain.toLocaleString()}</div>
-                    </div>
-                    <div class="text-right">
-                        <input type="number" value="${budget}" onchange="updateBudget('${c.name}', this.value, event)" onclick="event.stopPropagation()"
-                               class="w-16 bg-white/40 border-none rounded-xl p-2 text-center text-xs font-black focus:ring-0">
-                    </div>`;
-                blist.appendChild(div);
+                const s = mData.spends.filter(x=>x.cat===c.name).reduce((a,b)=>a+b.amt,0), b = mData.budgets[c.name]||0;
+                const d = document.createElement('div');
+                d.className = `p-4 rounded-2xl flex justify-between items-center ${c.color}`;
+                d.onclick = () => openExpenseDetails(c.name);
+                d.innerHTML = `<div><p class="text-[10px] font-bold uppercase opacity-50">${c.name}</p><p class="text-lg font-black">₹${(b-s).toLocaleString()}</p></div>
+                    <input type="number" value="${b}" onchange="updateBudget('${c.name}', this.value, event)" onclick="event.stopPropagation()" class="w-16 bg-white/50 p-1 rounded text-center text-xs font-bold border-none">`;
+                blist.appendChild(d);
             });
-
-            const sGrid = document.getElementById('saving-tiles');
-            sGrid.innerHTML = '';
-            let totalSaving = 0;
-            const colors = { "Gold": "bg-amber-500", "FD": "bg-blue-600", "Stocks": "bg-emerald-600", "Post Office": "bg-rose-600" };
+            const sTiles = document.getElementById('saving-tiles'); sTiles.innerHTML = '';
+            let totalS = 0; const sCols = {"Gold":"bg-amber-500","FD":"bg-blue-600","Stocks":"bg-emerald-600","Post Office":"bg-rose-600"};
             Object.keys(userData.savings).forEach(cat => {
-                const catTotal = userData.savings[cat].reduce((a, b) => a + b.amt, 0);
-                totalSaving += catTotal;
-                const tile = document.createElement('div');
-                tile.className = `${colors[cat]} p-8 rounded-[2.5rem] text-white shadow-lg active:scale-95 transition cursor-pointer`;
-                tile.onclick = () => openSavingDetails(cat);
-                tile.innerHTML = `<div class="text-xs font-bold opacity-70 uppercase mb-1">${cat}</div><div class="font-black text-2xl">₹${catTotal.toLocaleString()}</div>`;
-                sGrid.appendChild(tile);
+                const total = userData.savings[cat].reduce((a,b)=>a+b.amt,0); totalS += total;
+                const t = document.createElement('div');
+                t.className = `${sCols[cat]} p-6 rounded-2xl text-white shadow-md`;
+                t.onclick = () => openSavingDetails(cat);
+                t.innerHTML = `<p class="text-xs font-bold opacity-70">${cat}</p><p class="text-2xl font-black">₹${total.toLocaleString()}</p>`;
+                sTiles.appendChild(t);
             });
-            document.getElementById('lifetime-savings').innerText = `₹${totalSaving.toLocaleString()}`;
+            document.getElementById('lifetime-savings').innerText = `₹${totalS.toLocaleString()}`;
             lucide.createIcons();
         }
-
-        function openExpenseDetails(catName) {
-            const mData = userData.months[currentMonth];
-            const catLogs = mData.spends.filter(s => s.cat === catName);
-            document.getElementById('detail-cat-name').innerText = catName;
-            const list = document.getElementById('daily-log-list');
-            list.innerHTML = catLogs.slice().reverse().map((log, idx) => `
-                <div class="flex justify-between items-center p-5 bg-slate-50 rounded-3xl border border-slate-100">
-                    <div><p class="font-black text-lg">₹${log.amt.toLocaleString()}</p><p class="text-[10px] text-slate-400 font-bold uppercase">${log.date}</p></div>
-                    <button onclick="deleteExpenseEntry('${catName}', ${catLogs.length - 1 - idx})" class="p-2 text-rose-500"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
-                </div>`).join('');
+        function openExpenseDetails(c) {
+            const logs = userData.months[currentMonth].spends.filter(s=>s.cat===c);
+            document.getElementById('detail-cat-name').innerText = c;
+            document.getElementById('daily-log-list').innerHTML = logs.map((l,i)=>`<div class="flex justify-between p-4 bg-slate-50 rounded-xl"><div><p class="font-bold">₹${l.amt}</p><p class="text-[10px]">${l.date}</p></div><button onclick="deleteExp('${c}',${i})" class="text-rose-500">Delete</button></div>`).join('');
             document.getElementById('expense-detail-view').classList.remove('hidden');
-            lucide.createIcons();
         }
-
         function closeExpenseDetails() { document.getElementById('expense-detail-view').classList.add('hidden'); }
-
-        async function deleteExpenseEntry(catName, index) {
-            if(!confirm('Delete?')) return;
-            const m = userData.months[currentMonth];
-            let count = 0;
-            for(let i=0; i<m.spends.length; i++){
-                if(m.spends[i].cat === catName){
-                    if(count === index) { m.spends.splice(i, 1); break; }
-                    count++;
-                }
-            }
-            await syncToCloud(); render(); openExpenseDetails(catName);
+        async function deleteExp(c,idx) { 
+            let count=0, m=userData.months[currentMonth];
+            for(let i=0;i<m.spends.length;i++){ if(m.spends[i].cat===c){ if(count===idx){m.spends.splice(i,1); break;} count++; } }
+            await syncToCloud(); render(); closeExpenseDetails(); 
         }
-
-        let activeSavingCat = '';
-        function openSavingDetails(cat) { 
-            activeSavingCat = cat; 
-            document.getElementById('selected-saving-title').innerText = cat; 
-            document.getElementById('saving-detail-view').classList.remove('hidden'); 
-            renderSavingLogs(); 
-        }
-
+        let activeS = '';
+        function openSavingDetails(c) { activeS=c; document.getElementById('selected-saving-title').innerText=c; document.getElementById('saving-detail-view').classList.remove('hidden'); renderSLogs(); }
         function closeSavingDetails() { document.getElementById('saving-detail-view').classList.add('hidden'); }
-
         async function addSavingLog() {
-            const amt = parseFloat(document.getElementById('sav-amt').value);
-            const date = document.getElementById('sav-date').value;
-            const note = document.getElementById('sav-note').value;
-            if (!amt || !date) return;
-            userData.savings[activeSavingCat].push({ amt, date, note });
-            document.getElementById('sav-amt').value = ''; document.getElementById('sav-note').value = '';
-            await syncToCloud(); render(); renderSavingLogs();
+            const a=parseFloat(document.getElementById('sav-amt').value), d=document.getElementById('sav-date').value, n=document.getElementById('sav-note').value;
+            if(!a||!d) return; userData.savings[activeS].push({amt:a,date:d,note:n});
+            await syncToCloud(); render(); renderSLogs();
         }
-
-        function renderSavingLogs() {
-            const list = document.getElementById('saving-log-list');
-            list.innerHTML = userData.savings[activeSavingCat].slice().reverse().map((log, idx) => `
-                <div class="p-5 bg-slate-50 rounded-3xl border flex justify-between items-center">
-                    <div><p class="font-black text-lg">₹${log.amt.toLocaleString()}</p><p class="text-[10px] text-slate-400 font-bold">${log.date}</p><p class="text-xs italic text-slate-500 mt-1">${log.note}</p></div>
-                    <button onclick="deleteSavingLog(${userData.savings[activeSavingCat].length - 1 - idx})" class="text-slate-300"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                </div>`).join('');
-            lucide.createIcons();
+        function renderSLogs() {
+            document.getElementById('saving-log-list').innerHTML = userData.savings[activeS].map(l=>`<div class="p-3 bg-slate-50 rounded-lg"><p class="font-bold">₹${l.amt}</p><p class="text-[10px]">${l.date}</p><p class="text-xs italic">${l.note}</p></div>`).join('');
         }
-
-        async function deleteSavingLog(idx) {
-            if(!confirm('Delete?')) return;
-            userData.savings[activeSavingCat].splice(idx, 1);
-            await syncToCloud(); render(); renderSavingLogs();
-        }
-
-        document.getElementById('globalMonth').value = currentMonth;
-        lucide.createIcons();
+        document.getElementById('globalMonth').value = currentMonth; lucide.createIcons();
     </script>
 </body>
 </html>
+
